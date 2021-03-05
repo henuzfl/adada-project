@@ -1,4 +1,4 @@
-package com.dataclouds.entity;
+package com.dataclouds.model;
 
 import lombok.*;
 

@@ -18,7 +18,7 @@ import javax.sql.DataSource;
 @Configuration
 @EnableTransactionManagement
 @EnableJpaAuditing
-@EnableJpaRepositories(basePackages = "com.dataclouds.repository",
+@EnableJpaRepositories(basePackages = "com.dataclouds.adapter.output.repository",
         transactionManagerRef = "jpaTransactionManager")
 public class JpaConfig {
     @Bean
@@ -35,7 +35,7 @@ public class JpaConfig {
                 new LocalContainerEntityManagerFactoryBean();
         entityManagerFactory.setDataSource(dataSource());
         entityManagerFactory.setJpaVendorAdapter(japVendor);
-        entityManagerFactory.setPackagesToScan("com.dataclouds.entity");
+        entityManagerFactory.setPackagesToScan("com.dataclouds.model");
         return entityManagerFactory;
     }
 

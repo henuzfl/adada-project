@@ -2,16 +2,17 @@ package com.dataclouds.service;
 
 import cn.hutool.json.JSONObject;
 import com.dataclouds.adapter.output.IFileSystemService;
-import com.dataclouds.entity.DatasetDirEntity;
-import com.dataclouds.entity.DatasetFileEntity;
+import com.dataclouds.model.DatasetDirEntity;
+import com.dataclouds.model.DatasetFileEntity;
 import com.dataclouds.exceptions.NameExistsException;
 import com.dataclouds.exceptions.PathNotExistsException;
-import com.dataclouds.repository.DatasetDirRespository;
-import com.dataclouds.repository.DatasetFileRespository;
+import com.dataclouds.adapter.output.repository.DatasetDirRespository;
+import com.dataclouds.adapter.output.repository.DatasetFileRespository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import javax.annotation.PostConstruct;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,6 +34,11 @@ public class DatasetServiceImpl implements IDatasetService {
 
     @Autowired
     private IFileSystemService fileSystemService;
+
+    @PostConstruct
+    public void init(){
+
+    }
 
     @Override
     public void addDir(String path, String dir) {
