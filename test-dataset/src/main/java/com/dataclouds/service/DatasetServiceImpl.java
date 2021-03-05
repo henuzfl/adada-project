@@ -1,13 +1,13 @@
 package com.dataclouds.service;
 
 import cn.hutool.json.JSONObject;
-import com.dataclouds.adapter.output.IFileSystemService;
+import com.dataclouds.adapter.output.dfs.IFileSystemService;
 import com.dataclouds.model.DatasetDirEntity;
 import com.dataclouds.model.DatasetFileEntity;
 import com.dataclouds.exceptions.NameExistsException;
 import com.dataclouds.exceptions.PathNotExistsException;
-import com.dataclouds.adapter.output.repository.DatasetDirRespository;
-import com.dataclouds.adapter.output.repository.DatasetFileRespository;
+import com.dataclouds.adapter.output.dfs.repository.DatasetDirRespository;
+import com.dataclouds.adapter.output.dfs.repository.DatasetFileRespository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;

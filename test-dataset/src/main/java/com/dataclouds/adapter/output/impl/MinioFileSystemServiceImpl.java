@@ -1,6 +1,6 @@
 package com.dataclouds.adapter.output.impl;
 
-import com.dataclouds.adapter.output.IFileSystemService;
+import com.dataclouds.adapter.output.dfs.IFileSystemService;
 import com.dataclouds.config.MinioProperties;
 import io.minio.MinioClient;
 import io.minio.PutObjectOptions;

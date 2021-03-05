@@ -1,4 +1,4 @@
-package com.dataclouds.adapter.output.repository;
+package com.dataclouds.adapter.output.dfs.repository;
 
 import com.dataclouds.model.DatasetFileEntity;
 import org.springframework.data.jpa.repository.JpaRepository;

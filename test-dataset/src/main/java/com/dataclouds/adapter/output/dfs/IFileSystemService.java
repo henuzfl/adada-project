@@ -1,4 +1,4 @@
-package com.dataclouds.adapter.output;
+package com.dataclouds.adapter.output.dfs;
 
 import java.io.InputStream;
 
