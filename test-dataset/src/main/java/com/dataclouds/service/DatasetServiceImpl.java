@@ -1,6 +1,6 @@
 package com.dataclouds.service;
 
-import cn.hutool.json.JSONObject;
+import com.alibaba.fastjson.JSONObject;
 import com.dataclouds.adapter.output.dfs.IFileSystemService;
 import com.dataclouds.model.DatasetDirEntity;
 import com.dataclouds.model.DatasetFileEntity;

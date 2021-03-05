@@ -27,6 +27,9 @@
         <flyway.version>6.0.8</flyway.version>
         <minio.version>7.0.2</minio.version>
         <swagger.version>2.9.2</swagger.version>
+        <fastjson.version>1.2.75</fastjson.version>
+        <apache.common.lang>3.12.0</apache.common.lang>
+        <apache.common.io>2.8.0</apache.common.io>
     </properties>
 
     <dependencyManagement>
@@ -43,12 +46,7 @@
                 <artifactId>mysql-connector-java</artifactId>
                 <version>${mysql.version}</version>
             </dependency>
-            <!-- hutool工具类 -->
-            <dependency>
-                <groupId>cn.hutool</groupId>
-                <artifactId>hutool-all</artifactId>
-                <version>${hutool.version}</version>
-            </dependency>
+
             <dependency>
                 <groupId>org.flywaydb</groupId>
                 <artifactId>flyway-core</artifactId>
@@ -84,6 +82,27 @@
                 <artifactId>springfox-swagger-ui</artifactId>
                 <version>${swagger.version}</version>
             </dependency>
+
+            <dependency>
+                <groupId>com.alibaba</groupId>
+                <artifactId>fastjson</artifactId>
+                <version>${fastjson.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-lang3</artifactId>
+                <version>${apache.common.lang}</version>
+            </dependency>
+
+
+            <dependency>
+                <groupId>commons-io</groupId>
+                <artifactId>commons-io</artifactId>
+                <version>${apache.common.io}</version>
+            </dependency>
+
+
         </dependencies>
     </dependencyManagement>
 

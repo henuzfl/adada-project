@@ -1,15 +1,13 @@
 package com.dataclouds.service;
 
-import cn.hutool.json.JSONObject;
 import com.dataclouds.DatasetApplicationTest;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 
+import javax.annotation.Resource;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.util.List;
 
 /**
  * @Author: zfl
@@ -18,7 +16,7 @@ import java.util.List;
  */
 public class DatasetServiceTest extends DatasetApplicationTest {
 
-    @Autowired
+    @Resource(name = "datasetServiceNoDb")
     private IDatasetService datasetService;
 
     private File file;
@@ -41,18 +39,20 @@ public class DatasetServiceTest extends DatasetApplicationTest {
      */
     @Test
     public void testSave() throws FileNotFoundException {
-        datasetService.addDir("/", "d1");
-        datasetService.addDir("/", "d2");
-        datasetService.addFile("/", "file1.csv");
-        datasetService.upload("/file1.csv", new FileInputStream(file));
+        datasetService.addDir("/", "d3");
+//        datasetService.addDir("/", "d2");
+//        datasetService.addFile("/", "file1.csv");
+//        datasetService.upload("/file1.csv", new FileInputStream(file));
+//
+//        datasetService.addDir("/d1/", "d11");
+//        datasetService.addFile("/d1/", "file2.csv");
+//        datasetService.upload("/d1/file2.csv", new FileInputStream(file));
+//        datasetService.addFile("/d1/d11/", "file4.csv");
+//        datasetService.upload("/d1/d11/file4.csv", new FileInputStream(file));
+//
+//        datasetService.addFile("/d2/", "file3.csv");
+//        datasetService.upload("/d2/file3.csv", new FileInputStream(file));
 
-        datasetService.addDir("/d1/", "d11");
-        datasetService.addFile("/d1/", "file2.csv");
-        datasetService.upload("/d1/file2.csv", new FileInputStream(file));
-        datasetService.addFile("/d1/d11/", "file4.csv");
-        datasetService.upload("/d1/d11/file4.csv", new FileInputStream(file));
-
-        datasetService.addFile("/d2/", "file3.csv");
-        datasetService.upload("/d2/file3.csv", new FileInputStream(file));
+        System.out.println(datasetService.list("/"));
     }
 }
