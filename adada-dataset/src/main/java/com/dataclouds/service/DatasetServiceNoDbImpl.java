@@ -3,6 +3,7 @@ package com.dataclouds.service;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.dataclouds.adapter.output.dfs.IFileSystemService;
+import com.dataclouds.model.DatasetFile;
 import com.dataclouds.model.DatasetTree;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -35,8 +36,7 @@ public class DatasetServiceNoDbImpl implements IDatasetService {
         try (FileInputStream fis = new FileInputStream(file)) {
             String content = IOUtils.toString(fis, "UTF-8");
             if (StringUtils.isNotBlank(content)) {
-                tree = new DatasetTree(fileSystemService,
-                        JSON.parseObject(content));
+                tree = new DatasetTree(JSON.parseObject(content));
             }
         }
     }
@@ -70,7 +70,9 @@ public class DatasetServiceNoDbImpl implements IDatasetService {
 
     @Override
     public void upload(String path, InputStream inputStream) {
-        tree.upload(path, inputStream);
+        DatasetFile file = tree.findFile(path);
+        String dfsPath = fileSystemService.upload(file.getName(), inputStream);
+        tree.uploaded(file, dfsPath);
         persistence();
     }
 

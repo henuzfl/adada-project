@@ -1,12 +1,10 @@
 package com.dataclouds.model;
 
 import com.alibaba.fastjson.JSONObject;
-import com.dataclouds.adapter.output.dfs.IFileSystemService;
 import com.dataclouds.exceptions.NameExistsException;
 import com.dataclouds.exceptions.PathNotExistsException;
 import org.apache.commons.lang3.StringUtils;
 
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -18,23 +16,22 @@ import java.util.stream.Collectors;
  * @Version: 1.0.0
  */
 public class DatasetTree {
-
-
-    private IFileSystemService fileSystemService;
     private DatasetDir root;
 
-    public DatasetTree(IFileSystemService fileSystemService,
-                       JSONObject treeJson) {
-        this.fileSystemService = fileSystemService;
-        if (!treeJson.isEmpty()) {
-            this.root = decode(treeJson).get();
-        } else {
-            DatasetDir root = new DatasetDir();
-            root.setName("root");
-            root.setChildrenFiles(new ArrayList<DatasetFile>());
-            root.setChildrenDirs(new ArrayList<DatasetDir>());
-            this.root = root;
-        }
+    public DatasetTree() {
+        this.root = initRoot();
+    }
+
+    public DatasetTree(JSONObject treeJson) {
+        this.root = decode(treeJson).get();
+    }
+
+    private DatasetDir initRoot() {
+        DatasetDir root = new DatasetDir();
+        root.setName("root");
+        root.setChildrenFiles(new ArrayList<DatasetFile>());
+        root.setChildrenDirs(new ArrayList<DatasetDir>());
+        return root;
     }
 
     public void addDir(String path, String name) {
@@ -65,12 +62,10 @@ public class DatasetTree {
         parent.getChildrenFiles().add(file);
     }
 
-    public void upload(String path, InputStream inputStream) {
-        DatasetFile datasetFile = findFile(path);
-        String dfsPath = fileSystemService.upload(datasetFile.getName(),
-                inputStream);
-        datasetFile.setDfsPath(dfsPath);
+    public void uploaded(DatasetFile file, String dfsPath) {
+        file.setDfsPath(dfsPath);
     }
+
 
     public List<JSONObject> list(String path) {
         DatasetDir parent = findDir(path);
@@ -88,10 +83,7 @@ public class DatasetTree {
                     JSONObject tmp = new JSONObject();
                     tmp.put("name", file.getName());
                     tmp.put("type", "file");
-                    if (null != file.getDfsPath()) {
-                        tmp.put("url",
-                                fileSystemService.getUrl(file.getDfsPath()));
-                    }
+                    tmp.put("dfsPath", file.getDfsPath());
                     return tmp;
                 })
                 .collect(Collectors.toList()));
@@ -169,7 +161,7 @@ public class DatasetTree {
     }
 
 
-    private DatasetFile findFile(String path) {
+    public DatasetFile findFile(String path) {
         DatasetDir parent = root;
         String[] filePathArr = path.split("/");
         String fileName = filePathArr[filePathArr.length - 1];
