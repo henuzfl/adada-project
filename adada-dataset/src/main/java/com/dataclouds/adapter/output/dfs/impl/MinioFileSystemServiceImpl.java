@@ -1,4 +1,4 @@
-package com.dataclouds.adapter.output.impl;
+package com.dataclouds.adapter.output.dfs.impl;
 
 import com.dataclouds.adapter.output.dfs.IFileSystemService;
 import com.dataclouds.config.MinioProperties;

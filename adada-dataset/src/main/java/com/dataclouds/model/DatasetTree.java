@@ -8,6 +8,7 @@ import org.apache.commons.lang3.StringUtils;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
@@ -16,22 +17,22 @@ import java.util.stream.Collectors;
  * @Version: 1.0.0
  */
 public class DatasetTree {
+
+    private String id;
     private DatasetDir root;
 
     public DatasetTree() {
-        this.root = initRoot();
+        this.id = UUID.randomUUID().toString();
+        this.root = new DatasetDir("root");
     }
 
-    public DatasetTree(JSONObject treeJson) {
+    public DatasetTree(String id, JSONObject treeJson) {
+        this.id = id;
         this.root = decode(treeJson).get();
     }
 
-    private DatasetDir initRoot() {
-        DatasetDir root = new DatasetDir();
-        root.setName("root");
-        root.setChildrenFiles(new ArrayList<DatasetFile>());
-        root.setChildrenDirs(new ArrayList<DatasetDir>());
-        return root;
+    public String getId() {
+        return id;
     }
 
     public void addDir(String path, String name) {
@@ -42,10 +43,7 @@ public class DatasetTree {
                 .ifPresent(d -> {
                     throw new NameExistsException(path, name);
                 });
-        DatasetDir dir = new DatasetDir();
-        dir.setName(name);
-        dir.setChildrenDirs(new ArrayList<DatasetDir>());
-        dir.setChildrenFiles(new ArrayList<DatasetFile>());
+        DatasetDir dir = new DatasetDir(name);
         parent.getChildrenDirs().add(dir);
     }
 

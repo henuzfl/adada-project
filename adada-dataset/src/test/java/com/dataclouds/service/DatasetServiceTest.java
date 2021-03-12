@@ -16,8 +16,8 @@ import java.io.FileNotFoundException;
  */
 public class DatasetServiceTest extends DatasetApplicationTest {
 
-    @Resource(name = "datasetServiceNoDb")
-    private IDatasetService datasetService;
+    @Resource(name = "datasetService")
+    private INewDatasetService datasetService;
 
     private File file;
 
@@ -39,20 +39,28 @@ public class DatasetServiceTest extends DatasetApplicationTest {
      */
     @Test
     public void testSave() throws FileNotFoundException {
-        datasetService.addDir("/", "d3");
-//        datasetService.addDir("/", "d2");
-//        datasetService.addFile("/", "file1.csv");
-//        datasetService.upload("/file1.csv", new FileInputStream(file));
-//
-//        datasetService.addDir("/d1/", "d11");
-//        datasetService.addFile("/d1/", "file2.csv");
-//        datasetService.upload("/d1/file2.csv", new FileInputStream(file));
-//        datasetService.addFile("/d1/d11/", "file4.csv");
-//        datasetService.upload("/d1/d11/file4.csv", new FileInputStream(file));
-//
-//        datasetService.addFile("/d2/", "file3.csv");
-//        datasetService.upload("/d2/file3.csv", new FileInputStream(file));
 
-        System.out.println(datasetService.list("/"));
+        /**
+         * 新建一个数据集目录树
+         */
+        String id = datasetService.create();
+
+        datasetService.addDir(id, "/", "d3");
+        datasetService.addDir(id, "/", "d2");
+        datasetService.addDir(id, "/", "d1");
+        datasetService.addFile(id, "/", "file1.csv");
+        datasetService.upload(id, "/file1.csv", new FileInputStream(file));
+
+        datasetService.addDir(id, "/d1/", "d11");
+        datasetService.addFile(id, "/d1/", "file2.csv");
+        datasetService.upload(id, "/d1/file2.csv", new FileInputStream(file));
+        datasetService.addFile(id, "/d1/d11/", "file4.csv");
+        datasetService.upload(id, "/d1/d11/file4.csv",
+                new FileInputStream(file));
+
+        datasetService.addFile(id, "/d2/", "file3.csv");
+        datasetService.upload(id, "/d2/file3.csv", new FileInputStream(file));
+
+        System.out.println(datasetService.list(id, "/"));
     }
 }

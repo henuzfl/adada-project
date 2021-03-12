@@ -2,17 +2,19 @@ package com.dataclouds.service;
 
 import com.alibaba.fastjson.JSONObject;
 import com.dataclouds.adapter.output.dfs.IFileSystemService;
-import com.dataclouds.model.DatasetDirEntity;
-import com.dataclouds.model.DatasetFileEntity;
+import com.dataclouds.adapter.output.repository.DatasetDirRespository;
+import com.dataclouds.adapter.output.repository.DatasetFileRespository;
+import com.dataclouds.adapter.output.repository.DatasetTreeDbRespository;
+import com.dataclouds.exceptions.DatasetTreeNotExistsException;
 import com.dataclouds.exceptions.NameExistsException;
 import com.dataclouds.exceptions.PathNotExistsException;
-import com.dataclouds.adapter.output.dfs.repository.DatasetDirRespository;
-import com.dataclouds.adapter.output.dfs.repository.DatasetFileRespository;
+import com.dataclouds.model.DatasetDirEntity;
+import com.dataclouds.model.DatasetFileEntity;
+import com.dataclouds.model.DatasetTreeEntity;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
-import javax.annotation.PostConstruct;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,8 +25,8 @@ import java.util.stream.Collectors;
  * @Date: 2021/3/3 13:53
  * @Version: 1.0.0
  */
-@Service
-public class DatasetServiceImpl implements IDatasetService {
+@Service("datasetService")
+public class DatasetServiceImpl implements INewDatasetService {
 
     @Autowired
     private DatasetDirRespository datasetDirRespository;
@@ -33,16 +35,27 @@ public class DatasetServiceImpl implements IDatasetService {
     private DatasetFileRespository datasetFileRespository;
 
     @Autowired
+    private DatasetTreeDbRespository datasetTreeRespository;
+
+    @Autowired
     private IFileSystemService fileSystemService;
 
-    @PostConstruct
-    public void init(){
-
+    @Override
+    public String create() {
+        DatasetDirEntity root = new DatasetDirEntity();
+        root.setName("root");
+        DatasetTreeEntity tree = new DatasetTreeEntity();
+        tree.setRoot(root);
+        datasetTreeRespository.save(tree);
+        return String.valueOf(tree.getId());
     }
 
     @Override
-    public void addDir(String path, String dir) {
-        DatasetDirEntity parent = findDir(path);
+    public void addDir(String id, String path, String dir) {
+        DatasetTreeEntity tree =
+                datasetTreeRespository.findById(Long.valueOf(id))
+                        .orElseThrow(() -> new DatasetTreeNotExistsException(id));
+        DatasetDirEntity parent = findDir(tree, path);
         parent.getChildrenDirs().stream()
                 .filter(d -> d.getName().equals(dir))
                 .findAny()
@@ -56,8 +69,11 @@ public class DatasetServiceImpl implements IDatasetService {
     }
 
     @Override
-    public void addFile(String path, String fileName) {
-        DatasetDirEntity parent = findDir(path);
+    public void addFile(String id, String path, String fileName) {
+        DatasetTreeEntity tree =
+                datasetTreeRespository.findById(Long.valueOf(id))
+                        .orElseThrow(() -> new DatasetTreeNotExistsException(id));
+        DatasetDirEntity parent = findDir(tree, path);
         parent.getChildrenFiles().stream()
                 .filter(d -> d.getName().equals(fileName))
                 .findAny()
@@ -71,23 +87,26 @@ public class DatasetServiceImpl implements IDatasetService {
     }
 
     @Override
-    public void delete(String path) {
+    public void delete(String id, String path) {
 
     }
 
     @Override
-    public void rename(String path, String name) {
+    public void rename(String id, String path, String name) {
 
     }
 
     @Override
-    public void move(String originalPath, String targetPath) {
+    public void move(String id, String originalPath, String targetPath) {
 
     }
 
     @Override
-    public void upload(String path, InputStream inputStream) {
-        DatasetFileEntity datasetFile = findFile(path);
+    public void upload(String id, String path, InputStream inputStream) {
+        DatasetTreeEntity tree =
+                datasetTreeRespository.findById(Long.valueOf(id))
+                        .orElseThrow(() -> new DatasetTreeNotExistsException(id));
+        DatasetFileEntity datasetFile = findFile(tree, path);
         String fsPath = fileSystemService.upload(datasetFile.getName(),
                 inputStream);
         datasetFile.setFsPath(fsPath);
@@ -95,8 +114,11 @@ public class DatasetServiceImpl implements IDatasetService {
     }
 
     @Override
-    public List<JSONObject> list(String path) {
-        DatasetDirEntity parent = findDir(path);
+    public List<JSONObject> list(String id, String path) {
+        DatasetTreeEntity tree =
+                datasetTreeRespository.findById(Long.valueOf(id))
+                        .orElseThrow(() -> new DatasetTreeNotExistsException(id));
+        DatasetDirEntity parent = findDir(tree, path);
         List<JSONObject> result = new ArrayList<JSONObject>();
         result.addAll(parent.getChildrenDirs().stream()
                 .map(dir -> {
@@ -117,8 +139,8 @@ public class DatasetServiceImpl implements IDatasetService {
         return result;
     }
 
-    private DatasetDirEntity findDir(String path) {
-        DatasetDirEntity result = datasetDirRespository.findByParentIsNull();
+    private DatasetDirEntity findDir(DatasetTreeEntity tree, String path) {
+        DatasetDirEntity result = tree.getRoot();
         for (String p : path.split("/")) {
             if (!StringUtils.isEmpty(p.trim())) {
                 result = result.getChildrenDirs().stream()
@@ -130,8 +152,8 @@ public class DatasetServiceImpl implements IDatasetService {
         return result;
     }
 
-    private DatasetFileEntity findFile(String path) {
-        DatasetDirEntity parent = datasetDirRespository.findByParentIsNull();
+    private DatasetFileEntity findFile(DatasetTreeEntity tree, String path) {
+        DatasetDirEntity parent = tree.getRoot();
         String[] filePathArr = path.split("/");
         String fileName = filePathArr[filePathArr.length - 1];
         for (int i = 0; i < filePathArr.length - 1; i++) {

@@ -3,6 +3,7 @@ package com.dataclouds.model;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -18,4 +19,9 @@ public class DatasetDir {
     private List<DatasetDir> childrenDirs;
     private List<DatasetFile> childrenFiles;
 
+    public DatasetDir(String name) {
+        this.name = name;
+        this.childrenDirs = new ArrayList<DatasetDir>();
+        this.childrenFiles = new ArrayList<DatasetFile>();
+    }
 }

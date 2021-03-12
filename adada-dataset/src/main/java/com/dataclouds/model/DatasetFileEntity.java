@@ -9,8 +9,8 @@ import javax.persistence.*;
  * @Date: 2021/3/3 13:30
  * @Version: 1.0.0
  */
-@EqualsAndHashCode(callSuper = true)
-@Data
+@Setter
+@Getter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder

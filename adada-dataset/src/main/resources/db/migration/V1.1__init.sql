@@ -18,5 +18,10 @@ CREATE TABLE `t_dataset_file`  (
   `update_time` datetime(0) NOT NULL
 );
 
-
-INSERT INTO `t_dataset_dir`(`name`, `parent`, `create_time`, `update_time`) VALUES ('root', NULL, '2021-03-03 16:23:04', '2021-03-03 16:23:07');
+DROP TABLE IF EXISTS `t_dataset_tree`;
+CREATE TABLE `t_dataset_tree`  (
+  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  `root` int(10) UNSIGNED NOT NULL,
+  `create_time` datetime(0) NOT NULL,
+  `update_time` datetime(0) NOT NULL
+);

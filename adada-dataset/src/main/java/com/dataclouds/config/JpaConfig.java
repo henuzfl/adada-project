@@ -18,8 +18,7 @@ import javax.sql.DataSource;
 @Configuration
 @EnableTransactionManagement
 @EnableJpaAuditing
-@EnableJpaRepositories(basePackages = "com.dataclouds.adapter.output.dfs" +
-        ".repository",
+@EnableJpaRepositories(basePackages = "com.dataclouds.adapter.output.repository",
         transactionManagerRef = "jpaTransactionManager")
 public class JpaConfig {
     @Bean
