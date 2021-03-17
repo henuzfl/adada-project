@@ -4,8 +4,8 @@ import com.alibaba.fastjson.JSONObject;
 import com.dataclouds.adapter.output.dfs.IFileSystemService;
 import com.dataclouds.adapter.output.repository.DatasetTreeRespository;
 import com.dataclouds.exceptions.DatasetTreeNotExistsException;
-import com.dataclouds.model.DatasetFile;
-import com.dataclouds.model.DatasetTree;
+import com.dataclouds.domain.DatasetFile;
+import com.dataclouds.domain.DatasetTree;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,7 +18,7 @@ import java.util.List;
  * @Version: 1.0.0
  */
 @Service("datasetServiceNoDb")
-public class DatasetServiceNoDbImpl implements INewDatasetService {
+public class DatasetServiceNoDbImpl implements IDatasetService {
 
     @Autowired
     private IFileSystemService fileSystemService;
@@ -27,45 +27,45 @@ public class DatasetServiceNoDbImpl implements INewDatasetService {
     private DatasetTreeRespository datasetTreeRespository;
 
     @Override
-    public String create() {
+    public Long create() {
         DatasetTree tree = new DatasetTree();
         datasetTreeRespository.save(tree);
         return tree.getId();
     }
 
     @Override
-    public void addDir(String id, String path, String dir) {
+    public void addDir(Long id, String path, String name) {
         DatasetTree tree = datasetTreeRespository.findById(id)
                 .orElseThrow(() -> new DatasetTreeNotExistsException(id));
-        tree.addDir(path, dir);
+        tree.addDir(path, name);
         datasetTreeRespository.save(tree);
     }
 
     @Override
-    public void addFile(String id, String path, String fileName) {
+    public void addFile(Long id, String path, String name) {
         DatasetTree tree = datasetTreeRespository.findById(id)
                 .orElseThrow(() -> new DatasetTreeNotExistsException(id));
-        tree.addFile(path, fileName);
+        tree.addFile(path, name);
         datasetTreeRespository.save(tree);
     }
 
     @Override
-    public void delete(String id, String path) {
+    public void delete(Long id, String path) {
 
     }
 
     @Override
-    public void rename(String id, String path, String name) {
+    public void rename(Long id, String path, String name) {
 
     }
 
     @Override
-    public void move(String id, String originalPath, String targetPath) {
+    public void move(Long id, String originalPath, String targetPath) {
 
     }
 
     @Override
-    public void upload(String id, String path, InputStream inputStream) {
+    public void upload(Long id, String path, InputStream inputStream) {
         DatasetTree tree = datasetTreeRespository.findById(id)
                 .orElseThrow(() -> new DatasetTreeNotExistsException(id));
         DatasetFile file = tree.findFile(path);
@@ -75,7 +75,7 @@ public class DatasetServiceNoDbImpl implements INewDatasetService {
     }
 
     @Override
-    public List<JSONObject> list(String id, String path) {
+    public List<JSONObject> list(Long id, String path) {
         DatasetTree tree = datasetTreeRespository.findById(id)
                 .orElseThrow(() -> new DatasetTreeNotExistsException(id));
         return tree.list(path);

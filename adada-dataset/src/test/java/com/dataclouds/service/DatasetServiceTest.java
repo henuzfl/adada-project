@@ -16,8 +16,8 @@ import java.io.FileNotFoundException;
  */
 public class DatasetServiceTest extends DatasetApplicationTest {
 
-    @Resource(name = "datasetService")
-    private INewDatasetService datasetService;
+    @Resource(name = "datasetServiceNoDb")
+    private IDatasetService datasetService;
 
     private File file;
 
@@ -43,7 +43,7 @@ public class DatasetServiceTest extends DatasetApplicationTest {
         /**
          * 新建一个数据集目录树
          */
-        String id = datasetService.create();
+        Long id = datasetService.create();
 
         datasetService.addDir(id, "/", "d3");
         datasetService.addDir(id, "/", "d2");

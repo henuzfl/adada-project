@@ -3,6 +3,8 @@ server:
   servlet:
     context-path: /dataset
 spring:
+  application:
+    name: dataset
   datasource:
     jdbc-url: jdbc:mysql://192.168.1.72:3306/dataset?useUnicode=true&characterEncoding=UTF-8&useSSL=false&autoReconnect=true&failOverReadOnly=false&serverTimezone=GMT%2B8
     username: root
@@ -28,6 +30,8 @@ spring:
     open-in-view: true
   flyway:
     locations: classpath:db/migration
+  kafka:
+    bootstrap-servers: 192.168.1.72:9092
 logging:
   level:
     com.xkcoding: debug
@@ -39,3 +43,8 @@ minio:
   access-key: admin
   secret-key: 12345678
   bucket: mytest
+
+ancun:
+  event:
+    zookeeper:
+      connect-string: 192.168.1.72:2181

@@ -1,4 +1,4 @@
-package com.dataclouds.model;
+package com.dataclouds.domain;
 
 import lombok.*;
 
@@ -22,8 +22,8 @@ public class DatasetFileEntity extends BaseEntity {
     @Column(name = "name", columnDefinition = "varchar(255) not null")
     private String name;
 
-    @Column(name = "fs_path", columnDefinition = "varchar(1023) null")
-    private String fsPath;
+    @Column(name = "dfs_path", columnDefinition = "varchar(1023) null")
+    private String dfsPath;
 
     @ManyToOne(cascade = {CascadeType.REFRESH}, optional = true)
     @JoinColumn(name = "parent", referencedColumnName = "id")

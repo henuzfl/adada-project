@@ -35,7 +35,7 @@ public class JpaConfig {
                 new LocalContainerEntityManagerFactoryBean();
         entityManagerFactory.setDataSource(dataSource());
         entityManagerFactory.setJpaVendorAdapter(japVendor);
-        entityManagerFactory.setPackagesToScan("com.dataclouds.model");
+        entityManagerFactory.setPackagesToScan("com.dataclouds.domain");
         return entityManagerFactory;
     }
 

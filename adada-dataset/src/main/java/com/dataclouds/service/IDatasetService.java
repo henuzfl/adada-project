@@ -13,17 +13,19 @@ import java.util.List;
  */
 public interface IDatasetService {
 
-    void addDir(String path, String dir);
+    Long create();
 
-    void addFile(String path, String fileName);
+    void addDir(Long id, String path, String name);
 
-    void delete(String path);
+    void addFile(Long id, String path, String name);
 
-    void rename(String path, String name);
+    void delete(Long id, String path);
 
-    void move(String originalPath, String targetPath);
+    void rename(Long id, String path, String name);
 
-    void upload(String path, InputStream inputStream);
+    void move(Long id, String originalPath, String targetPath);
 
-    List<JSONObject> list(String path);
+    void upload(Long id, String path, InputStream inputStream);
+
+    List<JSONObject> list(Long id, String path);
 }

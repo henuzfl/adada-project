@@ -1,4 +1,4 @@
-package com.dataclouds.model;
+package com.dataclouds.domain;
 
 import com.alibaba.fastjson.JSONObject;
 import com.dataclouds.exceptions.NameExistsException;
@@ -8,7 +8,7 @@ import org.apache.commons.lang3.StringUtils;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
+import java.util.Random;
 import java.util.stream.Collectors;
 
 /**
@@ -18,20 +18,20 @@ import java.util.stream.Collectors;
  */
 public class DatasetTree {
 
-    private String id;
+    private Long id;
     private DatasetDir root;
 
     public DatasetTree() {
-        this.id = UUID.randomUUID().toString();
+        this.id = new Random().nextLong();
         this.root = new DatasetDir("root");
     }
 
-    public DatasetTree(String id, JSONObject treeJson) {
+    public DatasetTree(Long id, JSONObject treeJson) {
         this.id = id;
         this.root = decode(treeJson).get();
     }
 
-    public String getId() {
+    public Long getId() {
         return id;
     }
 

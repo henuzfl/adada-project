@@ -1,6 +1,6 @@
 package com.dataclouds.adapter.output.repository;
 
-import com.dataclouds.model.DatasetDirEntity;
+import com.dataclouds.domain.DatasetDirEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

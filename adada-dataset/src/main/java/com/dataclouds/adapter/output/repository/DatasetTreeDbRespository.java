@@ -1,6 +1,6 @@
 package com.dataclouds.adapter.output.repository;
 
-import com.dataclouds.model.DatasetTreeEntity;
+import com.dataclouds.domain.DatasetTreeEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 /**

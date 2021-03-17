@@ -7,7 +7,7 @@ package com.dataclouds.exceptions;
  */
 public class DatasetTreeNotExistsException extends RuntimeException {
 
-    public DatasetTreeNotExistsException(String id) {
+    public DatasetTreeNotExistsException(Long id) {
         super(String.format("数据集树id：%s不存在！", id));
     }
 }

@@ -1,6 +1,6 @@
 package com.dataclouds.adapter.output.repository;
 
-import com.dataclouds.model.DatasetTree;
+import com.dataclouds.domain.DatasetTree;
 
 import java.util.Optional;
 
@@ -11,7 +11,7 @@ import java.util.Optional;
  */
 public interface DatasetTreeRespository {
 
-    Optional<DatasetTree> findById(String id);
+    Optional<DatasetTree> findById(Long id);
 
     void save(DatasetTree tree);
 }

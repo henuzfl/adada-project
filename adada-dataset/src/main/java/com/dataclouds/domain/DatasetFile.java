@@ -1,4 +1,4 @@
-package com.dataclouds.model;
+package com.dataclouds.domain;
 
 import lombok.Data;
 

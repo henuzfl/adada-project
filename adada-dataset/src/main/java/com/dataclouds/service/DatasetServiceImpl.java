@@ -5,20 +5,18 @@ import com.dataclouds.adapter.output.dfs.IFileSystemService;
 import com.dataclouds.adapter.output.repository.DatasetDirRespository;
 import com.dataclouds.adapter.output.repository.DatasetFileRespository;
 import com.dataclouds.adapter.output.repository.DatasetTreeDbRespository;
+import com.dataclouds.domain.DatasetDirEntity;
+import com.dataclouds.domain.DatasetFileEntity;
+import com.dataclouds.domain.DatasetTreeEntity;
+import com.dataclouds.domain.event.DatasetTreeCreatedEvent;
+import com.dataclouds.event.annotation.DomainEvent;
+import com.dataclouds.event.publisher.IDomainEventPublisher;
 import com.dataclouds.exceptions.DatasetTreeNotExistsException;
-import com.dataclouds.exceptions.NameExistsException;
-import com.dataclouds.exceptions.PathNotExistsException;
-import com.dataclouds.model.DatasetDirEntity;
-import com.dataclouds.model.DatasetFileEntity;
-import com.dataclouds.model.DatasetTreeEntity;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * @Author: zfl
@@ -26,7 +24,7 @@ import java.util.stream.Collectors;
  * @Version: 1.0.0
  */
 @Service("datasetService")
-public class DatasetServiceImpl implements INewDatasetService {
+public class DatasetServiceImpl implements IDatasetService {
 
     @Autowired
     private DatasetDirRespository datasetDirRespository;
@@ -40,134 +38,67 @@ public class DatasetServiceImpl implements INewDatasetService {
     @Autowired
     private IFileSystemService fileSystemService;
 
+    @Autowired
+    private IDomainEventPublisher domainEventPublisher;
+
     @Override
-    public String create() {
-        DatasetDirEntity root = new DatasetDirEntity();
-        root.setName("root");
+    @DomainEvent(events = DatasetTreeCreatedEvent.class)
+    public Long create() {
         DatasetTreeEntity tree = new DatasetTreeEntity();
-        tree.setRoot(root);
         datasetTreeRespository.save(tree);
-        return String.valueOf(tree.getId());
+        return tree.getId();
     }
 
     @Override
-    public void addDir(String id, String path, String dir) {
+    public void addDir(Long id, String path, String name) {
+        DatasetTreeEntity tree =
+                datasetTreeRespository.findById(id)
+                        .orElseThrow(() -> new DatasetTreeNotExistsException(id));
+        DatasetDirEntity dir = tree.addDir(path, name);
+        datasetDirRespository.save(dir);
+    }
+
+    @Override
+    public void addFile(Long id, String path, String name) {
         DatasetTreeEntity tree =
                 datasetTreeRespository.findById(Long.valueOf(id))
                         .orElseThrow(() -> new DatasetTreeNotExistsException(id));
-        DatasetDirEntity parent = findDir(tree, path);
-        parent.getChildrenDirs().stream()
-                .filter(d -> d.getName().equals(dir))
-                .findAny()
-                .ifPresent(d -> {
-                    throw new NameExistsException(path, dir);
-                });
-        DatasetDirEntity dirEntity = new DatasetDirEntity();
-        dirEntity.setName(dir);
-        dirEntity.setParent(parent);
-        datasetDirRespository.save(dirEntity);
+        DatasetFileEntity file = tree.addFile(path, name);
+        datasetFileRespository.save(file);
     }
 
     @Override
-    public void addFile(String id, String path, String fileName) {
+    public void delete(Long id, String path) {
+
+    }
+
+    @Override
+    public void rename(Long id, String path, String name) {
+
+    }
+
+    @Override
+    public void move(Long id, String originalPath, String targetPath) {
+
+    }
+
+    @Override
+    public void upload(Long id, String path, InputStream inputStream) {
         DatasetTreeEntity tree =
                 datasetTreeRespository.findById(Long.valueOf(id))
                         .orElseThrow(() -> new DatasetTreeNotExistsException(id));
-        DatasetDirEntity parent = findDir(tree, path);
-        parent.getChildrenFiles().stream()
-                .filter(d -> d.getName().equals(fileName))
-                .findAny()
-                .ifPresent(d -> {
-                    throw new NameExistsException(path, fileName);
-                });
-        DatasetFileEntity fileEntity = new DatasetFileEntity();
-        fileEntity.setParent(parent);
-        fileEntity.setName(fileName);
-        datasetFileRespository.save(fileEntity);
-    }
-
-    @Override
-    public void delete(String id, String path) {
-
-    }
-
-    @Override
-    public void rename(String id, String path, String name) {
-
-    }
-
-    @Override
-    public void move(String id, String originalPath, String targetPath) {
-
-    }
-
-    @Override
-    public void upload(String id, String path, InputStream inputStream) {
-        DatasetTreeEntity tree =
-                datasetTreeRespository.findById(Long.valueOf(id))
-                        .orElseThrow(() -> new DatasetTreeNotExistsException(id));
-        DatasetFileEntity datasetFile = findFile(tree, path);
-        String fsPath = fileSystemService.upload(datasetFile.getName(),
+        DatasetFileEntity file = tree.findFile(path);
+        String dfsPath = fileSystemService.upload(file.getName(),
                 inputStream);
-        datasetFile.setFsPath(fsPath);
-        datasetFileRespository.save(datasetFile);
+        tree.uploaded(file, dfsPath);
+        datasetFileRespository.save(file);
     }
 
     @Override
-    public List<JSONObject> list(String id, String path) {
+    public List<JSONObject> list(Long id, String path) {
         DatasetTreeEntity tree =
                 datasetTreeRespository.findById(Long.valueOf(id))
                         .orElseThrow(() -> new DatasetTreeNotExistsException(id));
-        DatasetDirEntity parent = findDir(tree, path);
-        List<JSONObject> result = new ArrayList<JSONObject>();
-        result.addAll(parent.getChildrenDirs().stream()
-                .map(dir -> {
-                    JSONObject tmp = new JSONObject();
-                    tmp.put("name", dir.getName());
-                    tmp.put("type", "dir");
-                    return tmp;
-                })
-                .collect(Collectors.toList()));
-        result.addAll(parent.getChildrenFiles().stream()
-                .map(file -> {
-                    JSONObject tmp = new JSONObject();
-                    tmp.put("name", file.getName());
-                    tmp.put("type", "file");
-                    return tmp;
-                })
-                .collect(Collectors.toList()));
-        return result;
-    }
-
-    private DatasetDirEntity findDir(DatasetTreeEntity tree, String path) {
-        DatasetDirEntity result = tree.getRoot();
-        for (String p : path.split("/")) {
-            if (!StringUtils.isEmpty(p.trim())) {
-                result = result.getChildrenDirs().stream()
-                        .filter(d -> d.getName().equals(p.trim()))
-                        .findAny()
-                        .orElseThrow(() -> new PathNotExistsException(path));
-            }
-        }
-        return result;
-    }
-
-    private DatasetFileEntity findFile(DatasetTreeEntity tree, String path) {
-        DatasetDirEntity parent = tree.getRoot();
-        String[] filePathArr = path.split("/");
-        String fileName = filePathArr[filePathArr.length - 1];
-        for (int i = 0; i < filePathArr.length - 1; i++) {
-            String dirName = filePathArr[i];
-            if (!StringUtils.isEmpty(dirName)) {
-                parent = parent.getChildrenDirs().stream()
-                        .filter(d -> d.getName().equals(dirName))
-                        .findAny()
-                        .orElseThrow(() -> new PathNotExistsException(path));
-            }
-        }
-        return parent.getChildrenFiles().stream()
-                .filter(f -> f.getName().equals(fileName))
-                .findFirst()
-                .orElseThrow(() -> new PathNotExistsException(path));
+        return tree.list(path);
     }
 }

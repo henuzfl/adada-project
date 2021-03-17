@@ -26,6 +26,13 @@
     <dependencies>
 
         <dependency>
+            <groupId>com.dataclouds</groupId>
+            <artifactId>adada-domain-event</artifactId>
+            <version>1.0-SNAPSHOT</version>
+            <scope>compile</scope>
+        </dependency>
+
+        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>
         </dependency>
@@ -97,5 +104,8 @@
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
         </dependency>
+
+
+
     </dependencies>
 </project>

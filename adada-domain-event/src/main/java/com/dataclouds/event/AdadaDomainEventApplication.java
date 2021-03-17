@@ -15,5 +15,5 @@ import java.lang.annotation.RetentionPolicy;
 @Import({DomainEventConsumerConfiguration.class,
         DomainEventPublisherConfiguration.class})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface AncunEventApplication {
+public @interface AdadaDomainEventApplication {
 }

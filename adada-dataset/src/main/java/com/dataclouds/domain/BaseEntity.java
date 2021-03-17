@@ -1,5 +1,6 @@
-package com.dataclouds.model;
+package com.dataclouds.domain;
 
+import com.dataclouds.event.common.BaseAggregateRoot;
 import lombok.Data;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -16,7 +17,7 @@ import java.util.Date;
 @Data
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
-public class BaseEntity {
+public class BaseEntity extends BaseAggregateRoot {
 
     /**
      * 主键

@@ -1,5 +1,6 @@
 package com.dataclouds;
 
+import com.dataclouds.event.AdadaDomainEventApplication;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -10,6 +11,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 
 @SpringBootApplication
 @EnableConfigurationProperties
+@AdadaDomainEventApplication
 public class DatasetApplication {
 
     public static void main(String[] args) {

@@ -1,0 +1,13 @@
+spring:
+  application:
+    name: ancun-common-event
+  datasource:
+    schema: event_messages.sql,received_messages.sql
+    initialization-mode: embedded
+  kafka:
+    producer:
+      acks: all
+      retries: 0
+      batch-size: 16384
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.ByteArraySerializer

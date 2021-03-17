@@ -3,7 +3,7 @@ package com.dataclouds.adapter.output.repository.impl;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.dataclouds.adapter.output.repository.DatasetTreeRespository;
-import com.dataclouds.model.DatasetTree;
+import com.dataclouds.domain.DatasetTree;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Repository;
@@ -21,7 +21,7 @@ public class DatasetTreeRespositoryImpl implements DatasetTreeRespository {
 
 
     @Override
-    public Optional<DatasetTree> findById(String id) {
+    public Optional<DatasetTree> findById(Long id) {
         try {
             File file = new File(getPathById(id));
             try (FileInputStream fis = new FileInputStream(file)) {
@@ -54,7 +54,7 @@ public class DatasetTreeRespositoryImpl implements DatasetTreeRespository {
         }
     }
 
-    private String getPathById(String id) {
+    private String getPathById(Long id) {
         return id + ".json";
     }
 }
