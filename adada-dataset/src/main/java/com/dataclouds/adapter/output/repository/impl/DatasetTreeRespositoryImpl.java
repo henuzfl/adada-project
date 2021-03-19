@@ -3,7 +3,7 @@ package com.dataclouds.adapter.output.repository.impl;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.dataclouds.adapter.output.repository.DatasetTreeRespository;
-import com.dataclouds.domain.DatasetTree;
+import com.dataclouds.domain.model.DatasetTree;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Repository;
@@ -28,7 +28,7 @@ public class DatasetTreeRespositoryImpl implements DatasetTreeRespository {
                 String content = IOUtils.toString(fis, "UTF-8");
                 if (StringUtils.isNotBlank(content)) {
                     DatasetTree tree =
-                            new DatasetTree(id, JSON.parseObject(content));
+                            DatasetTree.decode(JSON.parseObject(content));
                     return Optional.of(tree);
                 }
             }

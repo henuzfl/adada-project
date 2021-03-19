@@ -1,4 +1,4 @@
-package com.dataclouds.domain;
+package com.dataclouds.domain.model;
 
 import com.alibaba.fastjson.JSONObject;
 import com.dataclouds.exceptions.NameExistsException;
@@ -9,6 +9,7 @@ import org.apache.commons.lang3.StringUtils;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -23,42 +24,42 @@ import java.util.stream.Collectors;
 @Entity
 @Table(name = "t_dataset_tree")
 @ToString(callSuper = true)
-public class DatasetTreeEntity extends BaseEntity {
+public class DatasetTree extends BaseEntity {
 
     @OneToOne(cascade = {CascadeType.ALL})
     @JoinColumn(name = "root", referencedColumnName = "id")
-    private DatasetDirEntity root;
+    private DatasetDir root;
 
-    public DatasetTreeEntity() {
-        DatasetDirEntity root = new DatasetDirEntity();
+    public DatasetTree() {
+        DatasetDir root = new DatasetDir();
         root.setName("root");
         this.root = root;
     }
 
-    public DatasetDirEntity addDir(String path, String name) {
-        DatasetDirEntity parent = findDir(path);
+    public DatasetDir addDir(String path, String name) {
+        DatasetDir parent = findDir(path);
         parent.getChildrenDirs().stream()
                 .filter(d -> d.getName().equals(name))
                 .findAny()
                 .ifPresent(d -> {
                     throw new NameExistsException(path, name);
                 });
-        DatasetDirEntity dir = new DatasetDirEntity();
+        DatasetDir dir = new DatasetDir();
         dir.setName(name);
         dir.setParent(parent);
         parent.getChildrenDirs().add(dir);
         return dir;
     }
 
-    public DatasetFileEntity addFile(String path, String name) {
-        DatasetDirEntity parent = findDir(path);
+    public DatasetFile addFile(String path, String name) {
+        DatasetDir parent = findDir(path);
         parent.getChildrenFiles().stream()
                 .filter(d -> d.getName().equals(name))
                 .findAny()
                 .ifPresent(d -> {
                     throw new NameExistsException(path, name);
                 });
-        DatasetFileEntity file = new DatasetFileEntity();
+        DatasetFile file = new DatasetFile();
         file.setParent(parent);
         file.setName(name);
         parent.getChildrenFiles().add(file);
@@ -66,7 +67,7 @@ public class DatasetTreeEntity extends BaseEntity {
     }
 
     public List<JSONObject> list(String path) {
-        DatasetDirEntity parent = findDir(path);
+        DatasetDir parent = findDir(path);
         List<JSONObject> result = new ArrayList<JSONObject>();
         result.addAll(parent.getChildrenDirs().stream()
                 .map(dir -> {
@@ -88,13 +89,13 @@ public class DatasetTreeEntity extends BaseEntity {
         return result;
     }
 
-    public DatasetFileEntity uploaded(DatasetFileEntity file, String dfsPath) {
+    public DatasetFile uploaded(DatasetFile file, String dfsPath) {
         file.setDfsPath(dfsPath);
         return file;
     }
 
-    private DatasetDirEntity findDir(String path) {
-        DatasetDirEntity result = this.getRoot();
+    private DatasetDir findDir(String path) {
+        DatasetDir result = this.getRoot();
         for (String p : path.split("/")) {
             if (!StringUtils.isEmpty(p.trim())) {
                 result = result.getChildrenDirs().stream()
@@ -106,8 +107,8 @@ public class DatasetTreeEntity extends BaseEntity {
         return result;
     }
 
-    public DatasetFileEntity findFile(String path) {
-        DatasetDirEntity parent = this.getRoot();
+    public DatasetFile findFile(String path) {
+        DatasetDir parent = this.getRoot();
         String[] filePathArr = path.split("/");
         String fileName = filePathArr[filePathArr.length - 1];
         for (int i = 0; i < filePathArr.length - 1; i++) {
@@ -123,5 +124,24 @@ public class DatasetTreeEntity extends BaseEntity {
                 .filter(f -> f.getName().equals(fileName))
                 .findFirst()
                 .orElseThrow(() -> new PathNotExistsException(path));
+    }
+
+    public JSONObject encode() {
+        JSONObject result = new JSONObject();
+        result.put("id", this.getId());
+        result.put("createTime", this.getCreateTime());
+        result.put("updateTime", this.getUpdateTime());
+        result.put("root", this.root.encode());
+        return result;
+    }
+
+    public static DatasetTree decode(JSONObject treeJson) {
+        DatasetTree tree = new DatasetTree();
+        tree.setId(treeJson.getLongValue("id"));
+        tree.setCreateTime(treeJson.getDate("createTime"));
+        tree.setUpdateTime(treeJson.getDate("updateTime"));
+        tree.setRoot(DatasetDir.decode(treeJson.getJSONObject("root"),
+                Optional.empty()));
+        return tree;
     }
 }

@@ -1,6 +1,6 @@
 package com.dataclouds.adapter.output.repository;
 
-import com.dataclouds.domain.DatasetDirEntity;
+import com.dataclouds.domain.model.DatasetDir;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -10,8 +10,8 @@ import org.springframework.stereotype.Repository;
  * @Version: 1.0.0
  */
 @Repository
-public interface DatasetDirRespository extends JpaRepository<DatasetDirEntity,
+public interface DatasetDirRespository extends JpaRepository<DatasetDir,
         Long> {
 
-    DatasetDirEntity findByParentIsNull();
+    DatasetDir findByParentIsNull();
 }

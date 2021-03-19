@@ -1,4 +1,4 @@
-package com.dataclouds.domain;
+package com.dataclouds.domain.model;
 
 import com.dataclouds.event.common.BaseAggregateRoot;
 import lombok.Data;
@@ -17,7 +17,7 @@ import java.util.Date;
 @Data
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
-public class BaseEntity extends BaseAggregateRoot {
+public class BaseEntity {
 
     /**
      * 主键

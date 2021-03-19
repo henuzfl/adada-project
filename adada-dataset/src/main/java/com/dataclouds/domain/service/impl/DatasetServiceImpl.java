@@ -1,15 +1,14 @@
-package com.dataclouds.service;
+package com.dataclouds.domain.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
 import com.dataclouds.adapter.output.dfs.IFileSystemService;
 import com.dataclouds.adapter.output.repository.DatasetDirRespository;
 import com.dataclouds.adapter.output.repository.DatasetFileRespository;
 import com.dataclouds.adapter.output.repository.DatasetTreeDbRespository;
-import com.dataclouds.domain.DatasetDirEntity;
-import com.dataclouds.domain.DatasetFileEntity;
-import com.dataclouds.domain.DatasetTreeEntity;
-import com.dataclouds.domain.event.DatasetTreeCreatedEvent;
-import com.dataclouds.event.annotation.DomainEvent;
+import com.dataclouds.domain.model.DatasetDir;
+import com.dataclouds.domain.model.DatasetFile;
+import com.dataclouds.domain.model.DatasetTree;
+import com.dataclouds.domain.service.IDatasetService;
 import com.dataclouds.event.publisher.IDomainEventPublisher;
 import com.dataclouds.exceptions.DatasetTreeNotExistsException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,28 +41,27 @@ public class DatasetServiceImpl implements IDatasetService {
     private IDomainEventPublisher domainEventPublisher;
 
     @Override
-    @DomainEvent(events = DatasetTreeCreatedEvent.class)
     public Long create() {
-        DatasetTreeEntity tree = new DatasetTreeEntity();
+        DatasetTree tree = new DatasetTree();
         datasetTreeRespository.save(tree);
         return tree.getId();
     }
 
     @Override
     public void addDir(Long id, String path, String name) {
-        DatasetTreeEntity tree =
+        DatasetTree tree =
                 datasetTreeRespository.findById(id)
                         .orElseThrow(() -> new DatasetTreeNotExistsException(id));
-        DatasetDirEntity dir = tree.addDir(path, name);
+        DatasetDir dir = tree.addDir(path, name);
         datasetDirRespository.save(dir);
     }
 
     @Override
     public void addFile(Long id, String path, String name) {
-        DatasetTreeEntity tree =
+        DatasetTree tree =
                 datasetTreeRespository.findById(Long.valueOf(id))
                         .orElseThrow(() -> new DatasetTreeNotExistsException(id));
-        DatasetFileEntity file = tree.addFile(path, name);
+        DatasetFile file = tree.addFile(path, name);
         datasetFileRespository.save(file);
     }
 
@@ -84,10 +82,10 @@ public class DatasetServiceImpl implements IDatasetService {
 
     @Override
     public void upload(Long id, String path, InputStream inputStream) {
-        DatasetTreeEntity tree =
+        DatasetTree tree =
                 datasetTreeRespository.findById(Long.valueOf(id))
                         .orElseThrow(() -> new DatasetTreeNotExistsException(id));
-        DatasetFileEntity file = tree.findFile(path);
+        DatasetFile file = tree.findFile(path);
         String dfsPath = fileSystemService.upload(file.getName(),
                 inputStream);
         tree.uploaded(file, dfsPath);
@@ -96,7 +94,7 @@ public class DatasetServiceImpl implements IDatasetService {
 
     @Override
     public List<JSONObject> list(Long id, String path) {
-        DatasetTreeEntity tree =
+        DatasetTree tree =
                 datasetTreeRespository.findById(Long.valueOf(id))
                         .orElseThrow(() -> new DatasetTreeNotExistsException(id));
         return tree.list(path);

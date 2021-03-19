@@ -1,6 +1,6 @@
 package com.dataclouds.adapter.output.repository;
 
-import com.dataclouds.domain.DatasetTree;
+import com.dataclouds.domain.model.DatasetTree;
 
 import java.util.Optional;
 

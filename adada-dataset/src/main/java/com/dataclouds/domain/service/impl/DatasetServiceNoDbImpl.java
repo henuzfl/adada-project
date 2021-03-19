@@ -1,16 +1,20 @@
-package com.dataclouds.service;
+package com.dataclouds.domain.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
 import com.dataclouds.adapter.output.dfs.IFileSystemService;
 import com.dataclouds.adapter.output.repository.DatasetTreeRespository;
+import com.dataclouds.domain.model.DatasetDir;
+import com.dataclouds.domain.model.DatasetFile;
+import com.dataclouds.domain.model.DatasetTree;
+import com.dataclouds.domain.service.IDatasetService;
 import com.dataclouds.exceptions.DatasetTreeNotExistsException;
-import com.dataclouds.domain.DatasetFile;
-import com.dataclouds.domain.DatasetTree;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.InputStream;
+import java.util.Date;
 import java.util.List;
+import java.util.Random;
 
 /**
  * @Author: zfl
@@ -29,6 +33,9 @@ public class DatasetServiceNoDbImpl implements IDatasetService {
     @Override
     public Long create() {
         DatasetTree tree = new DatasetTree();
+        tree.setId(new Random().nextLong());
+        tree.setCreateTime(new Date());
+        tree.setUpdateTime(new Date());
         datasetTreeRespository.save(tree);
         return tree.getId();
     }
@@ -37,7 +44,10 @@ public class DatasetServiceNoDbImpl implements IDatasetService {
     public void addDir(Long id, String path, String name) {
         DatasetTree tree = datasetTreeRespository.findById(id)
                 .orElseThrow(() -> new DatasetTreeNotExistsException(id));
-        tree.addDir(path, name);
+        DatasetDir dir = tree.addDir(path, name);
+        dir.setId(new Random().nextLong());
+        dir.setCreateTime(new Date());
+        dir.setUpdateTime(new Date());
         datasetTreeRespository.save(tree);
     }
 
@@ -45,7 +55,10 @@ public class DatasetServiceNoDbImpl implements IDatasetService {
     public void addFile(Long id, String path, String name) {
         DatasetTree tree = datasetTreeRespository.findById(id)
                 .orElseThrow(() -> new DatasetTreeNotExistsException(id));
-        tree.addFile(path, name);
+        DatasetFile file = tree.addFile(path, name);
+        file.setId(new Random().nextLong());
+        file.setCreateTime(new Date());
+        file.setUpdateTime(new Date());
         datasetTreeRespository.save(tree);
     }
 
@@ -71,6 +84,7 @@ public class DatasetServiceNoDbImpl implements IDatasetService {
         DatasetFile file = tree.findFile(path);
         String dfsPath = fileSystemService.upload(file.getName(), inputStream);
         tree.uploaded(file, dfsPath);
+        file.setUpdateTime(new Date());
         datasetTreeRespository.save(tree);
     }
 

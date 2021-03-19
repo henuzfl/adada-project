@@ -1,4 +1,4 @@
-package com.dataclouds.service;
+package com.dataclouds.domain.service;
 
 
 import com.alibaba.fastjson.JSONObject;
